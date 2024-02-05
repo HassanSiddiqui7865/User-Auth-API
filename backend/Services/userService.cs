@@ -123,9 +123,10 @@ namespace backend.Services
             var assignedProject = await context.AssignedProjects
                   .Include(x => x.Project)
                   .Include(a => a.User)
-                  .FirstOrDefaultAsync(e => e.ProjectId == projectid);
-            var users = new List<User>();
-            users.Add(assignedProject.User);
+                  .Include(b=>b.User.Role)
+                  .Where(e => e.ProjectId == projectid)
+                  .ToListAsync();
+            var users = assignedProject.Select(ap => ap.User).ToList();
             return users;
         }
 
