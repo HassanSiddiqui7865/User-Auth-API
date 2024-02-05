@@ -17,8 +17,8 @@ namespace backend.Services
             var newProject = new Project
             {
                 ProjectId = Guid.NewGuid(),
-                Projectfullname = addproject.Projectfullname,
-                Projectshortname = addproject.Projectshortname,
+                Projectname = addproject.Projectname,
+                Projectdescription = addproject.Projectdescription,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
             };
@@ -30,26 +30,36 @@ namespace backend.Services
 
         public async Task DeleteProject(Project project)
         {
-           context.Remove(project);
-           await context.SaveChangesAsync();
+            var assignedProjects = await context.AssignedProjects.Where(e => e.ProjectId == project.ProjectId).ToListAsync();
+            context.AssignedProjects.RemoveRange(assignedProjects);
+            context.Projects.Remove(project);
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<Project>> GetAllProjects()
         {
-            var projectList = await context.Projects.ToListAsync();
+            var projectList = context.Projects
+                .Include(x => x.AssignedProjects)
+                .ThenInclude(a => a.User)
+                .ThenInclude(b=>b.Role)
+                .ToList();
             return projectList;
         }
 
         public async Task<Project> GetProjectById(Guid id)
         {
-            var findProject = await context.Projects.FirstOrDefaultAsync(e=>e.ProjectId == id);
+            var findProject = await context.Projects
+                .Include(x => x.AssignedProjects)
+                .ThenInclude(a => a.User)
+                 .ThenInclude(b => b.Role)
+                .FirstOrDefaultAsync(e => e.ProjectId == id);
             return findProject;
         }
-
         public async Task UpdateProject(Project project, AddProject addproject)
         {
-            project.Projectshortname = addproject.Projectshortname;
-            project.Projectfullname = addproject.Projectfullname;
+            project.Projectname = addproject.Projectname;
+            project.Projectdescription = addproject.Projectdescription;
+            project.UpdatedAt = DateTime.Now;
             await context.SaveChangesAsync();
         }
     }

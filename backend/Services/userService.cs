@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace backend.Services
 {
@@ -42,8 +44,14 @@ namespace backend.Services
 
         public async Task<List<User>> GetUsers()
         {
-            var userList = await context.Users.ToListAsync();
-            return userList;
+            var usersWithProjects = await context.Users.Include(r=>r.Role)
+         .Include(u => u.Role)
+        .Include(u => u.AssignedProjects)
+            .ThenInclude(ap => ap.Project)
+        .ToListAsync();
+
+
+            return usersWithProjects;
         }
 
         public async Task<User> RegisterUser(AddUser adduser)
@@ -52,10 +60,11 @@ namespace backend.Services
             var newUser = new User
             {
                 UserId = Guid.NewGuid(),
+                Fullname = adduser.Fullname,
                 Username = adduser.Username,
                 Email = adduser.Email,
                 Pass = encryptedPassword,
-                Userrole = adduser.Userrole,
+                RoleId = adduser.RoleId,
                 CreatedAt = DateTime.Now,
             };
             context.Users.Add(newUser);
@@ -63,7 +72,7 @@ namespace backend.Services
             return newUser;
         }
 
-        public bool DecryptPassword(string Hashed,string password)
+        public bool DecryptPassword(string Hashed, string password)
         {
             byte[] hashBytes = Convert.FromBase64String(Hashed);
             byte[] salt = new byte[16];
@@ -82,7 +91,8 @@ namespace backend.Services
 
         public async Task<User> getByUsername(string username)
         {
-           var user = await context.Users.FirstOrDefaultAsync(e => e.Username == username);
+            var user = await context.Users.Include(x=>x.Role)
+            .FirstOrDefaultAsync(e => e.Username == username);
             return user;
         }
 
@@ -95,15 +105,36 @@ namespace backend.Services
 
         public async Task DeleteUser(User user)
         {
+            var assignedProjects = await context.AssignedProjects.Where(e => e.UserId == user.UserId).ToListAsync();
+            context.AssignedProjects.RemoveRange(assignedProjects);
             context.Users.Remove(user);
             await context.SaveChangesAsync();
         }
 
-        public async Task updatePassword(User user,string password)
+        public async Task<List<User>> GetByRole(Guid id)
         {
-            var encryptedPass = EncryptPassword(password);
-            user.Pass = encryptedPass;
-            await context.SaveChangesAsync();
+            var users = await context.Users.Include(x=>x.Role).Where(e=>e.RoleId == id).ToListAsync();
+            return users;
+
         }
+
+        public async Task<List<User>> GetProjectsUser(Guid projectid)
+        {
+            var assignedProject = await context.AssignedProjects
+                  .Include(x => x.Project)
+                  .Include(a => a.User)
+                  .FirstOrDefaultAsync(e => e.ProjectId == projectid);
+            var users = new List<User>();
+            users.Add(assignedProject.User);
+            return users;
+        }
+
+        //public async Task updatePassword(User user,string password)
+        //{
+        //    var encryptedPass = EncryptPassword(password);
+        //    user.Pass = encryptedPass;
+        //    await context.SaveChangesAsync();
+        //}
+
     }
 }

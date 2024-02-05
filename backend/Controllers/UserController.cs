@@ -1,4 +1,5 @@
 ﻿using backend.DTOS;
+using backend.Interfaces;
 using backend.Model;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace backend.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult> CreateUser([FromBody] AddUser adduser) 
+        public async Task<ActionResult> CreateUser([FromBody] AddUser adduser)
         {
             try
             {
@@ -28,11 +29,11 @@ namespace backend.Controllers
                 }
                 var savedUser = await userService.RegisterUser(adduser);
                 return Ok(savedUser);
-            }catch(Exception ex)
+            } catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        
+
         }
 
         [HttpPost]
@@ -42,23 +43,25 @@ namespace backend.Controllers
         {
             try
             {
-                var findusername = await userService.getByUsername(loginuser.Username);
-               
-                if (findusername == null)
+                var finduser = await userService.getByUsername(loginuser.Username);
+
+                if (finduser == null)
                 {
                     return NotFound("Wrong Credentials");
                 }
-                var decryptedPaasword = userService.DecryptPassword(findusername.Pass, loginuser.Pass);
+                var decryptedPaasword = userService.DecryptPassword(finduser.Pass, loginuser.Pass);
                 if (decryptedPaasword)
                 {
 
                     var user = new userLoggedIn
                     {
-                        UserId = findusername.UserId,
-                        Username = findusername.Username,
-                        Email = findusername.Email,
-                        Userrole = findusername.Userrole,
-                        CreatedAt = findusername.CreatedAt
+                        UserId = finduser.UserId,
+                        Fullname = finduser.Fullname,
+                        Username = finduser.Username,
+                        Email = finduser.Email,
+                        RoleId = finduser.RoleId,
+                        RoleName = finduser.Role.RoleName,
+                        CreatedAt = finduser.CreatedAt
                     };
                     return Ok(user);
                 }
@@ -66,7 +69,7 @@ namespace backend.Controllers
 
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -79,30 +82,95 @@ namespace backend.Controllers
             try
             {
                 var ListUser = await userService.GetUsers();
-                return Ok(ListUser);
-            }catch (Exception ex)
+                var usersDto = ListUser.Select(user => new UserWithProjectsDto
+                {
+                    UserId = user.UserId,
+                    Fullname = user.Fullname,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RoleId = user.RoleId,
+                    RoleName = user.Role.RoleName,
+                    CreatedAt = user.CreatedAt,
+                    Projects = user.AssignedProjects.Select(ap => new ProjectDTO
+                    {
+                        ProjectId = ap.Project.ProjectId,
+                        Projectname = ap.Project.Projectname,
+                        Projectdescription = ap.Project.Projectdescription,
+                        CreatedAt = ap.Project.CreatedAt,
+                        UpdatedAt = ap.Project.UpdatedAt
+                    }).ToList()
+                }).ToList();
+                return Ok(usersDto);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("{username}")]
-        public async Task<ActionResult> GetByUsername(string username)
+        [HttpGet("role/{id:Guid}")]
+        public async Task<ActionResult> GetUserByRole(Guid id)
         {
             try
             {
-                var findUser = await userService.getByUsername(username);
-                if (findUser != null)
+                var userList = await userService.GetByRole(id);
+                var users = userList.Select(user => new userLoggedIn
                 {
-                    return Ok(findUser);
-                }
-                return NotFound("user not found");
+                    UserId = user.UserId,
+                    Fullname = user.Fullname,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RoleId = user.RoleId,
+                    RoleName = user.Role.RoleName,
+                    CreatedAt = user.CreatedAt,
+                }).ToList();
+                return Ok(users);
             }catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+        //    [HttpGet("{username}")]
+        //    public async Task<ActionResult> GetByUsername(string username)
+        //    {
+        //        try
+        //        {
+        //            var findUser = await userService.getByUsername(username);
+        //            if (findUser != null)
+        //            {
+        //                return Ok(findUser);
+        //            }
+        //            return NotFound("user not found");
+        //        }catch(Exception ex)
+        //        {
+        //            return BadRequest(ex.Message);
+        //        }
+        //    }
+        [HttpGet("{projectid:Guid}")]
+        public async Task<ActionResult> ProjectUser(Guid projectid)
+        {
+            try
+            {
+                var userList = await userService.GetProjectsUser(projectid);
+                var Users = userList.Select(a => new userLoggedIn
+                {
+                    UserId = a.UserId,
+                    Fullname = a.Fullname,
+                    Username = a.Username,
+                    Email = a.Email,
+                    RoleId = a.RoleId,
+                    RoleName = a.Role.RoleName,
+                    CreatedAt = a.CreatedAt,
+
+                }).ToList();
+                return Ok(Users);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult>DeleteUser(Guid id)
+        public async Task<ActionResult> DeleteUser(Guid id)
         {
             try
             {
@@ -112,29 +180,53 @@ namespace backend.Controllers
                     await userService.DeleteUser(findUser);
                     return Ok();
                 }
-                return NotFound("User not found");
+                return NotFound();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut]
-        public async Task<ActionResult> Updatepassword( [FromBody] loginUser loginuser)
+        [HttpGet]
+        [Route("withoutProjects")]
+        public async Task<ActionResult> GetUsersWithoutProjects()
         {
             try
             {
-                var findUser = await userService.getByUsername(loginuser.Username);
-                if(findUser != null)
+                var ListUser = await userService.GetUsers();
+                var usersDto = ListUser.Select(user => new userLoggedIn
                 {
-                    await userService.updatePassword(findUser, loginuser.Pass);
-                    return Ok("Updated");
-                }return NotFound("Username not found");
-            }catch(Exception ex)
+                    UserId = user.UserId,
+                    Fullname = user.Fullname,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RoleId = user.RoleId,
+                    RoleName = user.Role.RoleName,
+                    CreatedAt = user.CreatedAt,
+                }).ToList();
+                return Ok(usersDto);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-    }
+        }
+        //    [HttpPut]
+        //    public async Task<ActionResult> Updatepassword( [FromBody] loginUser loginuser)
+        //    {
+        //        try
+        //        {
+        //            var findUser = await userService.getByUsername(loginuser.Username);
+        //            if(findUser != null)
+        //            {
+        //                await userService.updatePassword(findUser, loginuser.Pass);
+        //                return Ok("Updated");
+        //            }return NotFound("Username not found");
+        //        }catch(Exception ex)
+        //        {
+        //            return BadRequest(ex.Message);
+        //        }
+        //}
     }
     
 }

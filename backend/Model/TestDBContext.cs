@@ -16,8 +16,10 @@ namespace backend.Model
         {
         }
 
+        public virtual DbSet<AssignedProject> AssignedProjects { get; set; } = null!;
         public virtual DbSet<Book> Books { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,6 +33,32 @@ namespace backend.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AssignedProject>(entity =>
+            {
+                entity.HasKey(e => e.ProjectAssignedId)
+                    .HasName("PK__Assigned__7BD7841502347B7E");
+
+                entity.ToTable("AssignedProject");
+
+                entity.Property(e => e.ProjectAssignedId).ValueGeneratedNever();
+
+                entity.Property(e => e.IsLead).HasColumnName("isLead");
+
+                entity.Property(e => e.UserId).HasColumnName("userId");
+
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.AssignedProjects)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AssignedP__Proje__503BEA1C");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AssignedProjects)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AssignedP__userI__4F47C5E3");
+            });
+
             modelBuilder.Entity<Book>(entity =>
             {
                 entity.Property(e => e.BookId)
@@ -62,19 +90,30 @@ namespace backend.Model
 
             modelBuilder.Entity<Project>(entity =>
             {
+                entity.ToTable("PROJECTS");
+
                 entity.Property(e => e.ProjectId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("createdAt");
 
-                entity.Property(e => e.Projectfullname).HasMaxLength(200);
-
-                entity.Property(e => e.Projectshortname).HasMaxLength(100);
+                entity.Property(e => e.Projectname).HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("updatedAt");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.RoleId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("roleId");
+
+                entity.Property(e => e.RoleName)
+                    .HasMaxLength(100)
+                    .HasColumnName("roleName");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -90,20 +129,28 @@ namespace backend.Model
                     .HasColumnName("createdAt");
 
                 entity.Property(e => e.Email)
-                    .HasMaxLength(150)
+                    .HasMaxLength(200)
                     .HasColumnName("email");
+
+                entity.Property(e => e.Fullname)
+                    .HasMaxLength(200)
+                    .HasColumnName("fullname");
 
                 entity.Property(e => e.Pass)
                     .HasMaxLength(500)
                     .HasColumnName("pass");
 
+                entity.Property(e => e.RoleId).HasColumnName("roleId");
+
                 entity.Property(e => e.Username)
-                    .HasMaxLength(150)
+                    .HasMaxLength(100)
                     .HasColumnName("username");
 
-                entity.Property(e => e.Userrole)
-                    .HasMaxLength(20)
-                    .HasColumnName("userrole");
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__USERS__roleId__3E1D39E1");
             });
 
             OnModelCreatingPartial(modelBuilder);
