@@ -118,6 +118,17 @@ namespace backend.Services
 
         }
 
+        public async Task<List<User>> GetProjectsUser(Guid projectid)
+        {
+            var assignedProject = await context.AssignedProjects
+                  .Include(x => x.Project)
+                  .Include(a => a.User)
+                  .FirstOrDefaultAsync(e => e.ProjectId == projectid);
+            var users = new List<User>();
+            users.Add(assignedProject.User);
+            return users;
+        }
+
         //public async Task updatePassword(User user,string password)
         //{
         //    var encryptedPass = EncryptPassword(password);

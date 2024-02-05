@@ -145,12 +145,12 @@ namespace backend.Controllers
         //            return BadRequest(ex.Message);
         //        }
         //    }
-        [HttpGet("ProjectUsers/{id:Guid}")]
-        public async Task<ActionResult> ProjectUser(Guid projectId)
+        [HttpGet("{projectid:Guid}")]
+        public async Task<ActionResult> ProjectUser(Guid projectid)
         {
             try
             {
-                var userList = await userService.GetProjectsUser(projectId);
+                var userList = await userService.GetProjectsUser(projectid);
                 var Users = userList.Select(a => new userLoggedIn
                 {
                     UserId = a.UserId,
@@ -162,8 +162,12 @@ namespace backend.Controllers
                     CreatedAt = a.CreatedAt,
 
                 }).ToList();
-                return Ok(Users)
-            };
+                return Ok(Users);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpDelete("{id:Guid}")]
         public async Task<ActionResult> DeleteUser(Guid id)
