@@ -13,15 +13,15 @@ namespace backend.Interfaces
 
         Task DeleteUser(User user);
 
-        Task updatePassword(User user,string password);
-
-        Task<User> CheckingExisting(string username,string email);
-
-       Task<User> getByUsername(string username);
+        // Task updatePassword(User user,string password);
+        Task <List<User>> GetByRole(Guid id);
+        Task<User> CheckingExisting(string username, string email);
+        Task<User> getByUsername(string username);
         string EncryptPassword(string password);
+        bool DecryptPassword(string Hashed, string password);
 
-        bool DecryptPassword(string Hashed,string password);
 
-        
+
+
     }
 }
