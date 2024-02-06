@@ -28,27 +28,6 @@ namespace backend.Controllers
                 return BadRequest(ex);
             }
         }
-
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult> GetProjectByUserId(Guid id)
-        {
-            try
-            {
-                var projects = await assignedprojectService.GetAssignedProjects(id);
-                var wrappedProjects = projects.Select(a => new ProjectDTO
-                {
-                    ProjectId = a.ProjectId,
-                    Projectname = a.Projectname,
-                    Projectdescription = a.Projectdescription,
-                    CreatedAt = a.CreatedAt,
-                    UpdatedAt = a.UpdatedAt
-
-                }).ToList();
-                return Ok(wrappedProjects);
-            }catch(Exception ex) { 
-             return BadRequest(ex.Message);
-            }
-        }
         [HttpDelete("{projectId:Guid}/{userId:Guid}")]
         public async Task<ActionResult> DeleteAssigned(Guid projectId,Guid userId)
         {
@@ -67,5 +46,43 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("{projectId:Guid}/{userId:Guid}")]
+        public async Task<ActionResult> UpdateLead(Guid projectId, Guid userId)
+        {
+            try
+            {
+                var findAssigned = await assignedprojectService.GetAssigned(projectId, userId);
+                if (findAssigned == null)
+                {
+                    return NotFound();
+                }
+                await assignedprojectService.UpdateLeadTrue(findAssigned);
+                return Ok();
+            }
+        catch(Exception ex) {
+                return BadRequest();
+            }
+        }
+        [HttpPut("{projectId:Guid}/{leadId:Guid}/{userId:Guid}")]
+        public async Task<ActionResult> UpdateRemoveLead(Guid projectId,Guid leadId , Guid userId)
+        {
+            try
+            {
+                var findLead = await assignedprojectService.GetAssigned(projectId, leadId);
+                var findUser = await assignedprojectService.GetAssigned(projectId, userId);
+                if (findLead == null || findUser == null)
+                {
+                    return NotFound();
+                }
+                await assignedprojectService.UpdateLeadFalse(findLead);
+                await assignedprojectService.UpdateLeadTrue(findUser);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }

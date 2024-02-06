@@ -46,14 +46,15 @@ namespace backend.Services
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.ProjectId == projectId);
             return assignedProject;
         }
-
-        public async Task<List<Project>> GetAssignedProjects(Guid id)
+        public async Task UpdateLeadFalse(AssignedProject assignedProject)
         {
-            var assignedProjects = await context.AssignedProjects
-               .Where(e => e.UserId == id)
-               .Select(e => e.Project)
-               .ToListAsync();
-            return assignedProjects;
+            assignedProject.IsLead = false;
+            await context.SaveChangesAsync();
+        }
+        public async Task UpdateLeadTrue(AssignedProject assignedProject)
+        {
+            assignedProject.IsLead = true;
+            await context.SaveChangesAsync();
         }
     }
 }

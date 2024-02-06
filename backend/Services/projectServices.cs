@@ -55,6 +55,19 @@ namespace backend.Services
                 .FirstOrDefaultAsync(e => e.ProjectId == id);
             return findProject;
         }
+
+        public async Task<List<Project>> GetProjectsByUserId(Guid userId)
+        {
+                    var projects = await context.Projects
+        .Include(p => p.AssignedProjects)
+            .ThenInclude(ap => ap.User)
+                .ThenInclude(u => u.Role)
+        .Where(p => p.AssignedProjects.Any(ap => ap.UserId == userId))
+        .ToListAsync();
+            return projects;
+        }
+
+
         public async Task UpdateProject(Project project, AddProject addproject)
         {
             project.Projectname = addproject.Projectname;
@@ -62,5 +75,6 @@ namespace backend.Services
             project.UpdatedAt = DateTime.Now;
             await context.SaveChangesAsync();
         }
+        
     }
 }
