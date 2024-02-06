@@ -9,6 +9,8 @@ namespace backend.Interfaces
         Task<List<Project>> GetAllProjects();
         Task DeleteProject(Project project);
         Task<Project> GetProjectById(Guid id);
+
+        Task<List<Project>> GetProjectsByUserId(Guid userId);
         Task UpdateProject(Project project, AddProject addproject);
     }
 }
