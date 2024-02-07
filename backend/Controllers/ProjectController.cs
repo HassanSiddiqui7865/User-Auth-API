@@ -87,7 +87,7 @@ namespace backend.Controllers
             }
         }
         [HttpGet("withoutUsers/{projectid:Guid}")]
-        public async Task<ActionResult> GetProjectByIdsWithoutUse(Guid projectid)
+        public async Task<ActionResult> GetProjectByIdsWithoutUser(Guid projectid)
         {
             try
             {

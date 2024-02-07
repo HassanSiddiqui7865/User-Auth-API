@@ -58,14 +58,13 @@ namespace backend.Services
 
         public async Task<List<Project>> GetProjectsByUserId(Guid userId)
         {
-            var assignedProject = await context.AssignedProjects
-                  .Include(x => x.Project)
-                  .Include(a => a.User)
-                  .Include(b => b.User.Role)
-                  .Where(e => e.UserId == userId)
-                  .ToListAsync();
-            var project = assignedProject.Select(ap => ap.Project).ToList();
-            return project;
+            var projects = await context.Projects
+         .Include(x => x.AssignedProjects)
+             .ThenInclude(a => a.User)
+                 .ThenInclude(u => u.Role)
+         .Where(e => e.AssignedProjects.Any(ap => ap.UserId == userId))
+         .ToListAsync();
+            return projects;
         }
 
 
