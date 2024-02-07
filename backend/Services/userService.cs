@@ -118,24 +118,13 @@ namespace backend.Services
 
         }
 
-        public async Task<List<User>> GetProjectsUser(Guid projectid)
-        {
-            var assignedProject = await context.AssignedProjects
-                  .Include(x => x.Project)
-                  .Include(a => a.User)
-                  .Include(b=>b.User.Role)
-                  .Where(e => e.ProjectId == projectid)
-                  .ToListAsync();
-            var users = assignedProject.Select(ap => ap.User).ToList();
-            return users;
+            //var assignedProject = await context.AssignedProjects
+            //      .Include(x => x.Project)
+            //      .Include(a => a.User)
+            //      .Include(b=>b.User.Role)
+            //      .Where(e => e.ProjectId == projectid)
+            //      .ToListAsync();
+            //var users = assignedProject.Select(ap => ap.User).ToList();
+            //return users;
         }
-
-        //public async Task updatePassword(User user,string password)
-        //{
-        //    var encryptedPass = EncryptPassword(password);
-        //    user.Pass = encryptedPass;
-        //    await context.SaveChangesAsync();
-        //}
-
-    }
 }

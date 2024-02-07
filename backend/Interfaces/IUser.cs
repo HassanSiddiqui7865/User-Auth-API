@@ -13,7 +13,6 @@ namespace backend.Interfaces
 
         Task DeleteUser(User user);
 
-        Task<List<User>> GetProjectsUser(Guid projectid);
         // Task updatePassword(User user,string password);
         Task <List<User>> GetByRole(Guid id);
         Task<User> CheckingExisting(string username, string email);
