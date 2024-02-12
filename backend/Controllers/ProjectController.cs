@@ -37,6 +37,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
            
                     Users = project.AssignedProjects.Select(a => new UserDTO
@@ -74,6 +76,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
                     CreatedAt = project.CreatedAt,
                     UpdatedAt = project.UpdatedAt
@@ -100,6 +104,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
                     CreatedAt = project.CreatedAt,
                     UpdatedAt = project.UpdatedAt,
@@ -126,6 +132,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
                     Users = project.AssignedProjects.Select(a => new UserDTO
                     {
@@ -163,6 +171,8 @@ namespace backend.Controllers
                 {
                     ProjectId = p.ProjectId,
                     Projectname = p.Projectname,
+                    Projectkey = p.Projectkey,
+                    AvatarUrl = p.AvatarUrl,
                     Projectdescription = p.Projectdescription,
                     Users = p.AssignedProjects.Select(a => new UserDTO
                     {

@@ -8,6 +8,7 @@ namespace backend.Model
         public Project()
         {
             AssignedProjects = new HashSet<AssignedProject>();
+            Tickets = new HashSet<Ticket>();
         }
 
         public Guid ProjectId { get; set; }
@@ -15,7 +16,10 @@ namespace backend.Model
         public string Projectdescription { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public string AvatarUrl { get; set; } = null!;
+        public string Projectkey { get; set; } = null!;
 
         public virtual ICollection<AssignedProject> AssignedProjects { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

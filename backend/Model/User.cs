@@ -8,6 +8,8 @@ namespace backend.Model
         public User()
         {
             AssignedProjects = new HashSet<AssignedProject>();
+            TicketAssignedToNavigations = new HashSet<Ticket>();
+            TicketReportedByNavigations = new HashSet<Ticket>();
         }
 
         public Guid UserId { get; set; }
@@ -20,5 +22,7 @@ namespace backend.Model
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<AssignedProject> AssignedProjects { get; set; }
+        public virtual ICollection<Ticket> TicketAssignedToNavigations { get; set; }
+        public virtual ICollection<Ticket> TicketReportedByNavigations { get; set; }
     }
 }

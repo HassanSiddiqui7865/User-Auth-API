@@ -18,6 +18,8 @@ namespace backend.Services
             {
                 ProjectId = Guid.NewGuid(),
                 Projectname = addproject.Projectname,
+                Projectkey = addproject.Projectkey,
+                AvatarUrl = addproject.AvatarUrl,
                 Projectdescription = addproject.Projectdescription,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -72,6 +74,8 @@ namespace backend.Services
         {
             project.Projectname = addproject.Projectname;
             project.Projectdescription = addproject.Projectdescription;
+            project.AvatarUrl = addproject.AvatarUrl;
+            project.Projectkey = addproject.Projectkey;
             project.UpdatedAt = DateTime.Now;
             await context.SaveChangesAsync();
         }

@@ -117,14 +117,5 @@ namespace backend.Services
             return users;
 
         }
-
-            //var assignedProject = await context.AssignedProjects
-            //      .Include(x => x.Project)
-            //      .Include(a => a.User)
-            //      .Include(b=>b.User.Role)
-            //      .Where(e => e.ProjectId == projectid)
-            //      .ToListAsync();
-            //var users = assignedProject.Select(ap => ap.User).ToList();
-            //return users;
         }
 }
