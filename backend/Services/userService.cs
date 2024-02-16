@@ -106,6 +106,8 @@ namespace backend.Services
         public async Task DeleteUser(User user)
         {
             var assignedProjects = await context.AssignedProjects.Where(e => e.UserId == user.UserId).ToListAsync();
+            var assignedTickets = await context.Tickets.Where(e=> e.AssignedToNavigation.UserId == user.UserId).ToListAsync();
+            context.Tickets.RemoveRange(assignedTickets);
             context.AssignedProjects.RemoveRange(assignedProjects);
             context.Users.Remove(user);
             await context.SaveChangesAsync();

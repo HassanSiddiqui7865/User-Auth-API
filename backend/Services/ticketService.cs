@@ -34,6 +34,12 @@ namespace backend.Services
             return newticket;
         }
 
+        public async Task DeleteTicket(Ticket ticket)
+        {
+            context.Tickets.Remove(ticket);
+            await context.SaveChangesAsync();
+        }
+
         public async Task<Ticket> GetTicketById(Guid ticketId)
         {
             var ticket = await context.Tickets
@@ -71,6 +77,17 @@ namespace backend.Services
               .Include(t => t.Project)
               .ToListAsync();
             return ticketList;
+        }
+
+        public async Task UpdateTicket(Ticket ticket, UpdateTicketDTO updateTicketDTO)
+        {
+            ticket.Ticketsummary =  updateTicketDTO.Ticketsummary;
+            ticket.Ticketdescription = updateTicketDTO.Ticketdescription;
+            ticket.Ticketpriority = updateTicketDTO.Ticketpriority;
+            ticket.Tickettype = updateTicketDTO.Tickettype;
+            ticket.AssignedTo = updateTicketDTO.AssignedTo;
+            ticket.UpdatedAt = DateTime.Now;
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateTicketStatus(Ticket ticket,string status)

@@ -14,5 +14,9 @@ namespace backend.Interfaces
         Task<Ticket> GetTicketById(Guid ticketId);
 
         Task UpdateTicketStatus(Ticket ticket,string status);
+
+        Task UpdateTicket(Ticket ticket,UpdateTicketDTO updateTicketDTO);
+
+        Task DeleteTicket(Ticket ticket);
     }
 }
