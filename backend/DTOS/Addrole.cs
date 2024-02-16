@@ -2,6 +2,6 @@
 {
     public class Addrole
     {
-        public string RoleName { get; set; } = null!;
+        public string RoleName { get; set; }
     }
 }

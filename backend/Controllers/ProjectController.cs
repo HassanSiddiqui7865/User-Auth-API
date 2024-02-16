@@ -37,6 +37,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
            
                     Users = project.AssignedProjects.Select(a => new UserDTO
@@ -74,6 +76,8 @@ namespace backend.Controllers
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
                     CreatedAt = project.CreatedAt,
                     UpdatedAt = project.UpdatedAt
@@ -86,6 +90,33 @@ namespace backend.Controllers
                return BadRequest(ex.Message);
             }
         }
+        [HttpGet("withoutUsers/{projectid:Guid}")]
+        public async Task<ActionResult> GetProjectByIdsWithoutUser(Guid projectid)
+        {
+            try
+            {
+                var project = await projectServices.GetProjectById(projectid);
+                if(project == null)
+                {
+                    return NotFound();
+                }
+                var projectDTO = new ProjectDTO
+                {
+                    ProjectId = project.ProjectId,
+                    Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
+                    Projectdescription = project.Projectdescription,
+                    CreatedAt = project.CreatedAt,
+                    UpdatedAt = project.UpdatedAt,
+                };
+                return Ok(projectDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult> GetProjectById(Guid id)
@@ -93,10 +124,16 @@ namespace backend.Controllers
             try
             {
                 var project = await projectServices.GetProjectById(id);
+                if(project == null)
+                {
+                    return NotFound();
+                }
                 var projectDTO = new ProjectWithUsersDto
                 {
                     ProjectId = project.ProjectId,
                     Projectname = project.Projectname,
+                    Projectkey = project.Projectkey,
+                    AvatarUrl = project.AvatarUrl,
                     Projectdescription = project.Projectdescription,
                     Users = project.AssignedProjects.Select(a => new UserDTO
                     {
@@ -105,14 +142,53 @@ namespace backend.Controllers
                         Username = a.User.Username,
                         Email = a.User.Email,
                         RoleId = a.User.RoleId,
-                        IsLead = a.IsLead,
                         RoleName = a.User.Role.RoleName,
+                        IsLead = a.IsLead,
                         CreatedAt = a.User.CreatedAt,
 
                     }).ToList(),
                     CreatedAt = project.CreatedAt,
                     UpdatedAt = project.UpdatedAt
                 };
+                return Ok(projectDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("user/{userId:Guid}")]
+        public async Task<ActionResult> GetProjectsByUserId(Guid userId)
+        {
+            try
+            {
+                var project = await projectServices.GetProjectsByUserId(userId);
+                if (project == null)
+                {
+                    return NotFound();
+                }
+                var projectDTO = project.Select(p=>new ProjectWithUsersDto
+                {
+                    ProjectId = p.ProjectId,
+                    Projectname = p.Projectname,
+                    Projectkey = p.Projectkey,
+                    AvatarUrl = p.AvatarUrl,
+                    Projectdescription = p.Projectdescription,
+                    Users = p.AssignedProjects.Select(a => new UserDTO
+                    {
+                        UserId = a.UserId,
+                        Fullname = a.User.Fullname,
+                        Username = a.User.Username,
+                        Email = a.User.Email,
+                        RoleId = a.User.RoleId,
+                        RoleName = a.User.Role.RoleName,
+                        IsLead = a.IsLead,
+                        CreatedAt = a.User.CreatedAt,
+
+                    }).ToList(),
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt
+                }).ToList();
                 return Ok(projectDTO);
             }
             catch (Exception ex)

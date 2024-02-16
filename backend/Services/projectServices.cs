@@ -18,6 +18,8 @@ namespace backend.Services
             {
                 ProjectId = Guid.NewGuid(),
                 Projectname = addproject.Projectname,
+                Projectkey = addproject.Projectkey,
+                AvatarUrl = addproject.AvatarUrl,
                 Projectdescription = addproject.Projectdescription,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -55,12 +57,28 @@ namespace backend.Services
                 .FirstOrDefaultAsync(e => e.ProjectId == id);
             return findProject;
         }
+
+        public async Task<List<Project>> GetProjectsByUserId(Guid userId)
+        {
+            var projects = await context.Projects
+         .Include(x => x.AssignedProjects)
+             .ThenInclude(a => a.User)
+                 .ThenInclude(u => u.Role)
+         .Where(e => e.AssignedProjects.Any(ap => ap.UserId == userId))
+         .ToListAsync();
+            return projects;
+        }
+
+
         public async Task UpdateProject(Project project, AddProject addproject)
         {
             project.Projectname = addproject.Projectname;
             project.Projectdescription = addproject.Projectdescription;
+            project.AvatarUrl = addproject.AvatarUrl;
+            project.Projectkey = addproject.Projectkey;
             project.UpdatedAt = DateTime.Now;
             await context.SaveChangesAsync();
         }
+        
     }
 }

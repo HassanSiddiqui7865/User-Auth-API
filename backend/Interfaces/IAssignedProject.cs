@@ -7,11 +7,15 @@ namespace backend.Interfaces
     {
         Task<AssignedProjectDTO> CreateAssignedProject(AddAssignedProject addAssignedProject);
 
-        Task<List<Project>> GetAssignedProjects(Guid id);
 
         Task <AssignedProject> GetAssigned(Guid projectId,Guid userId);
 
         Task DeleteAssigned(AssignedProject assignedProject);
+
+        Task UpdateLeadFalse(AssignedProject assignedProject);
+
+        Task UpdateLeadTrue(AssignedProject assignedProject);
+
 
     }
 }

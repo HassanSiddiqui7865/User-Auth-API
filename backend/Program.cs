@@ -1,5 +1,6 @@
 using backend.Model;
 using Microsoft.EntityFrameworkCore;
+using sib_api_v3_sdk.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddSwaggerGen();
 var provider = builder.Services.BuildServiceProvider();
 var config = provider.GetService<IConfiguration>();
 builder.Services.AddDbContext<TestDBContext>(item => item.UseSqlServer(config.GetConnectionString("LMS")));
-    
+Configuration.Default.ApiKey.Add("api-key", builder.Configuration["EmailSenderKey:ApiKey"]);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
