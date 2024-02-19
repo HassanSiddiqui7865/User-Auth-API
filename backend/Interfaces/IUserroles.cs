@@ -8,5 +8,7 @@ namespace backend.Interfaces
         Task<Role> AddUserRole(Addrole addrole);
 
         Task<List<Role>> GetAllRoles(); 
+
+
     }
 }
