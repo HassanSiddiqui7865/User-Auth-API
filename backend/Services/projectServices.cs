@@ -33,6 +33,8 @@ namespace backend.Services
         public async Task DeleteProject(Project project)
         {
             var assignedProjects = await context.AssignedProjects.Where(e => e.ProjectId == project.ProjectId).ToListAsync();
+            var assignedTickets = await context.Tickets.Where(e=>e.ProjectId == project.ProjectId).ToListAsync();
+            context.Tickets.RemoveRange(assignedTickets);
             context.AssignedProjects.RemoveRange(assignedProjects);
             context.Projects.Remove(project);
             await context.SaveChangesAsync();

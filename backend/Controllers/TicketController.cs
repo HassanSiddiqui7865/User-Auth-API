@@ -137,6 +137,61 @@ namespace backend.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet("getticketById/{ticketId:Guid}")]
+        public async Task<ActionResult> GetTicketsById(Guid ticketId)
+        {
+            try
+            {
+                var ticket = await ticketService.GetTicketById(ticketId);
+                var ticketDto = new TicketDTO
+                {
+                    TicketId = ticket.TicketId,
+                    Ticketsummary = ticket.Ticketsummary,
+                    Ticketdescription = ticket.Ticketdescription,
+                    AssignedTo = ticket.AssignedToNavigation != null ? new userLoggedIn
+                    {
+                        UserId = ticket.AssignedToNavigation.UserId,
+                        Username = ticket.AssignedToNavigation.Username,
+                        Fullname = ticket.AssignedToNavigation.Fullname,
+                        Email = ticket.AssignedToNavigation.Email,
+                        RoleName = ticket.AssignedToNavigation.Role.RoleName,
+                        RoleId = ticket.AssignedToNavigation.RoleId,
+                        CreatedAt = ticket.AssignedToNavigation.CreatedAt
+                    } : null,
+                    ReportedBy = new userLoggedIn
+                    {
+                        UserId = ticket.ReportedByNavigation.UserId,
+                        Username = ticket.ReportedByNavigation.Username,
+                        Fullname = ticket.ReportedByNavigation.Fullname,
+                        Email = ticket.ReportedByNavigation.Email,
+                        RoleId = ticket.ReportedByNavigation.RoleId,
+                        RoleName = ticket.ReportedByNavigation.Role.RoleName,
+                        CreatedAt = ticket.ReportedByNavigation.CreatedAt
+                    },
+                    ProjectId = new ProjectDTO
+                    {
+                        ProjectId = ticket.ProjectId,
+                        Projectname = ticket.Project.Projectname,
+                        Projectkey = ticket.Project.Projectkey,
+                        Projectdescription = ticket.Project.Projectdescription,
+                        AvatarUrl = ticket.Project.AvatarUrl,
+                        CreatedAt = ticket.Project.CreatedAt,
+                        UpdatedAt = ticket.Project.UpdatedAt
+                    },
+                    Ticketpriority = ticket.Ticketpriority,
+                    Ticketstatus = ticket.Ticketstatus,
+                    Tickettype = ticket.Tickettype,
+                    CreatedAt = ticket.CreatedAt,
+                    UpdatedAt = ticket.UpdatedAt,
+                };
+                return Ok(ticketDto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+        }
         [HttpPut("{ticketId:Guid}/{status}")]
         public async Task<ActionResult> UpdateTicketStatus(Guid ticketId,string status)
         {
@@ -155,5 +210,44 @@ namespace backend.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpPut("{ticketId:Guid}")]
+        public async Task<ActionResult> UpdateTicket(Guid ticketId, [FromBody] UpdateTicketDTO updateTicketDTO)
+        {
+            try
+            {
+                var findTicket = await ticketService.GetTicketById(ticketId);
+                if (findTicket == null)
+                {
+                    return NotFound();
+                }
+                await ticketService.UpdateTicket(findTicket, updateTicketDTO);
+                return Ok(new { message = "Ticket Updated" });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        [HttpDelete("{ticketId:Guid}")]
+        public async Task<ActionResult> DeleteTicket(Guid ticketId)
+        {
+            try
+            {
+                var findTicket = await ticketService.GetTicketById(ticketId);
+                if (findTicket == null)
+                {
+                    return NotFound();
+                }
+                await ticketService.DeleteTicket(findTicket);
+                return Ok(new { message = "Ticket Deleted" });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
     }
 }
