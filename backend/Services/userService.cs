@@ -98,7 +98,11 @@ namespace backend.Services
 
         public async Task<User> GetById(Guid id)
         {
-            var findUser = await context.Users.FirstOrDefaultAsync(e => e.UserId == id);
+            var findUser = await context.Users
+                .Include(x=>x.Role)
+                .Include(x => x.AssignedProjects)
+                .ThenInclude(a => a.Project)
+                .FirstOrDefaultAsync(e => e.UserId == id);
             return findUser;
 
         }
@@ -119,5 +123,11 @@ namespace backend.Services
             return users;
 
         }
+
+        public async Task UpdateRole(Guid RoleId,User user)
+        {
+           user.RoleId = RoleId;
+           await context.SaveChangesAsync();
         }
+    }
 }

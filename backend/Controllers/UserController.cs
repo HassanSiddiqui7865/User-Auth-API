@@ -96,6 +96,8 @@ namespace backend.Controllers
                         ProjectId = ap.Project.ProjectId,
                         Projectname = ap.Project.Projectname,
                         Projectdescription = ap.Project.Projectdescription,
+                        AvatarUrl = ap.Project.AvatarUrl,
+                        Projectkey = ap.Project.Projectkey,
                         CreatedAt = ap.Project.CreatedAt,
                         UpdatedAt = ap.Project.UpdatedAt
                     }).ToList()
@@ -129,22 +131,43 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //    [HttpGet("{username}")]
-        //    public async Task<ActionResult> GetByUsername(string username)
-        //    {
-        //        try
-        //        {
-        //            var findUser = await userService.getByUsername(username);
-        //            if (findUser != null)
-        //            {
-        //                return Ok(findUser);
-        //            }
-        //            return NotFound("user not found");
-        //        }catch(Exception ex)
-        //        {
-        //            return BadRequest(ex.Message);
-        //        }
-        //    }
+        [HttpGet("{userId:Guid}")]
+        public async Task<ActionResult> GetUserById(Guid userId)
+        {
+            try
+            {
+                var user = await userService.GetById(userId);
+                if(user!= null)
+                {
+                    var usersDto = new UserWithProjectsDto
+                    {
+                        UserId = user.UserId,
+                        Fullname = user.Fullname,
+                        Username = user.Username,
+                        Email = user.Email,
+                        RoleId = user.RoleId,
+                        RoleName = user.Role.RoleName,
+                        CreatedAt = user.CreatedAt,
+                        Projects = user.AssignedProjects.Select(ap => new ProjectDTO
+                        {
+                            ProjectId = ap.Project.ProjectId,
+                            Projectname = ap.Project.Projectname,
+                            Projectdescription = ap.Project.Projectdescription,
+                            AvatarUrl = ap.Project.AvatarUrl,
+                            Projectkey = ap.Project.Projectkey,
+                            CreatedAt = ap.Project.CreatedAt,
+                            UpdatedAt = ap.Project.UpdatedAt
+                        }).ToList()
+                    };
+                    return Ok(usersDto);
+                }
+                return BadRequest();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpDelete("{id:Guid}")]
         public async Task<ActionResult> DeleteUser(Guid id)
         {
@@ -187,22 +210,25 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //    [HttpPut]
-        //    public async Task<ActionResult> Updatepassword( [FromBody] loginUser loginuser)
-        //    {
-        //        try
-        //        {
-        //            var findUser = await userService.getByUsername(loginuser.Username);
-        //            if(findUser != null)
-        //            {
-        //                await userService.updatePassword(findUser, loginuser.Pass);
-        //                return Ok("Updated");
-        //            }return NotFound("Username not found");
-        //        }catch(Exception ex)
-        //        {
-        //            return BadRequest(ex.Message);
-        //        }
-        //}
+        [HttpPut("{userId:Guid}/{roleId:Guid}")]
+        public async Task<ActionResult> UpdateUserRole(Guid userId,Guid roleId)
+        {
+            try
+            {
+                var findUser = await userService.GetById(userId);
+                if (findUser != null)
+                {
+                    await userService.UpdateRole(roleId, findUser);
+                    return Ok();
+                }
+                return BadRequest();
+
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+       
     }
     
 }
