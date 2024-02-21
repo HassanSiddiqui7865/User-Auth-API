@@ -47,7 +47,7 @@ namespace backend.Controllers
 
                 if (finduser == null)
                 {
-                    return NotFound("Wrong Credentials");
+                    return NotFound(new { message = "Wrong Credentials" });
                 }
                 var decryptedPaasword = userService.DecryptPassword(finduser.Pass, loginuser.Pass);
                 if (decryptedPaasword)
@@ -65,7 +65,7 @@ namespace backend.Controllers
                     };
                     return Ok(user);
                 }
-                return NotFound("Wrong Credentials");
+                return NotFound(new { message = "Wrong Credentials" });
 
 
             }
@@ -81,7 +81,7 @@ namespace backend.Controllers
         {
             try
             {
-                var ListUser = await userService.GetUsers();
+                var ListUser = await userService.GetUsersWithProjects();
                 var usersDto = ListUser.Select(user => new UserWithProjectsDto
                 {
                     UserId = user.UserId,
@@ -109,34 +109,13 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("role/{id:Guid}")]
-        public async Task<ActionResult> GetUserByRole(Guid id)
-        {
-            try
-            {
-                var userList = await userService.GetByRole(id);
-                var users = userList.Select(user => new userLoggedIn
-                {
-                    UserId = user.UserId,
-                    Fullname = user.Fullname,
-                    Username = user.Username,
-                    Email = user.Email,
-                    RoleId = user.RoleId,
-                    RoleName = user.Role.RoleName,
-                    CreatedAt = user.CreatedAt,
-                }).ToList();
-                return Ok(users);
-            }catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet("{userId:Guid}")]
+
+        [HttpGet("UserWithProjects/{userId:Guid}")] 
         public async Task<ActionResult> GetUserById(Guid userId)
         {
             try
             {
-                var user = await userService.GetById(userId);
+                var user = await userService.GetUserWithProjectById(userId);
                 if(user!= null)
                 {
                     var usersDto = new UserWithProjectsDto
@@ -168,18 +147,18 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult> DeleteUser(Guid id)
+        [HttpDelete("{userId:Guid}")]
+        public async Task<ActionResult> DeleteUser(Guid userId)
         {
             try
             {
-                var findUser = await userService.GetById(id);
+                var findUser = await userService.GetUserById(userId);
                 if (findUser != null)
                 {
                     await userService.DeleteUser(findUser);
-                    return Ok();
+                    return Ok(new {message = "Deleted Successfully"});
                 }
-                return NotFound();
+                return NotFound(new { message = "User not found" });
             }
             catch (Exception ex)
             {
@@ -215,13 +194,13 @@ namespace backend.Controllers
         {
             try
             {
-                var findUser = await userService.GetById(userId);
+                var findUser = await userService.GetUserById(userId);
                 if (findUser != null)
                 {
                     await userService.UpdateRole(roleId, findUser);
-                    return Ok();
+                    return Ok(new { message = "Updated Successfully" });
                 }
-                return BadRequest();
+                return NotFound(new { message = "User not found" });
 
             }catch(Exception ex)
             {

@@ -98,7 +98,7 @@ namespace backend.Controllers
                 var project = await projectServices.GetProjectById(projectid);
                 if(project == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Project Not found" });
                 }
                 var projectDTO = new ProjectDTO
                 {
@@ -118,15 +118,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult> GetProjectById(Guid id)
+        [HttpGet("{projectId:Guid}")]
+        public async Task<ActionResult> GetProjectById(Guid projectId)
         {
             try
             {
-                var project = await projectServices.GetProjectById(id);
+                var project = await projectServices.GetProjectById(projectId);
                 if(project == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Project Not found" });
                 }
                 var projectDTO = new ProjectWithUsersDto
                 {
@@ -165,7 +165,7 @@ namespace backend.Controllers
                 var project = await projectServices.GetProjectsByUserId(userId);
                 if (project == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "User Not found" });
                 }
                 var projectDTO = project.Select(p=>new ProjectWithUsersDto
                 {
@@ -197,12 +197,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult> DeleteProject(Guid id)
+        [HttpDelete("{projectId:Guid}")]
+        public async Task<ActionResult> DeleteProject(Guid projectId)
         {
             try
             {
-                var findUser = await projectServices.GetProjectById(id);
+                var findUser = await projectServices.GetProjectById(projectId);
                 if (findUser != null)
                 {
                     await projectServices.DeleteProject(findUser);
@@ -215,12 +215,12 @@ namespace backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("{id:Guid}")]
-        public async Task<ActionResult> UpdateProject([FromBody] AddProject addproject, Guid id)
+        [HttpPut("{projectId:Guid}")]
+        public async Task<ActionResult> UpdateProject([FromBody] AddProject addproject, Guid projectId)
         {
             try
             {
-                var findProject = await projectServices.GetProjectById(id);
+                var findProject = await projectServices.GetProjectById(projectId);
                 if (findProject != null)
                 {
                     await projectServices.UpdateProject(findProject, addproject);

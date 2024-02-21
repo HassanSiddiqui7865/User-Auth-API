@@ -42,15 +42,23 @@ namespace backend.Services
             return existingUser;
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<List<User>> GetUsersWithProjects()
         {
             var usersWithProjects = await context.Users.Include(r=>r.Role)
-         .Include(u => u.Role)
-        .Include(u => u.AssignedProjects)
-            .ThenInclude(ap => ap.Project)
-        .ToListAsync();
+               .Include(u => u.Role)
+               .Include(u => u.AssignedProjects)
+               .ThenInclude(ap => ap.Project)
+               .ToListAsync();
 
 
+            return usersWithProjects;
+        }
+
+        public async Task<List<User>> GetUsers()
+        {
+            var usersWithProjects = await context.Users.Include(r => r.Role)
+               .Include(u => u.Role)
+               .ToListAsync();
             return usersWithProjects;
         }
 
@@ -96,7 +104,7 @@ namespace backend.Services
             return user;
         }
 
-        public async Task<User> GetById(Guid id)
+        public async Task<User> GetUserWithProjectById(Guid id)
         {
             var findUser = await context.Users
                 .Include(x=>x.Role)
@@ -117,17 +125,18 @@ namespace backend.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<User>> GetByRole(Guid id)
-        {
-            var users = await context.Users.Include(x=>x.Role).Where(e=>e.RoleId == id).ToListAsync();
-            return users;
-
-        }
-
         public async Task UpdateRole(Guid RoleId,User user)
         {
            user.RoleId = RoleId;
            await context.SaveChangesAsync();
+        }
+
+        public async Task<User> GetUserById(Guid id)
+        {
+            var findUser = await context.Users
+               .Include(x => x.Role)
+               .FirstOrDefaultAsync(e => e.UserId == id);
+            return findUser;
         }
     }
 }

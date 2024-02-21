@@ -82,12 +82,12 @@ namespace backend.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpGet("{projectid:Guid}")]
-        public async Task<ActionResult> GetTicketsByProject(Guid projectid)
+        [HttpGet("{projectId:Guid}")]
+        public async Task<ActionResult> GetTicketsByProject(Guid projectId)
         {
             try
             {
-                var ticketList = await ticketService.GetTicketByProject(projectid);
+                var ticketList = await ticketService.GetTicketByProject(projectId);
                 var ticketListDto = ticketList.Select(ticket => new TicketDTO
                 {
                     TicketId = ticket.TicketId,
@@ -200,7 +200,7 @@ namespace backend.Controllers
                 var findTicket = await ticketService.GetTicketById(ticketId);
                 if(findTicket == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Ticket not found" });
                 }
                 await ticketService.UpdateTicketStatus(findTicket, status);
                 return Ok(new { message = "Ticket Updated" });
@@ -218,7 +218,7 @@ namespace backend.Controllers
                 var findTicket = await ticketService.GetTicketById(ticketId);
                 if (findTicket == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Ticket not found" });
                 }
                 await ticketService.UpdateTicket(findTicket, updateTicketDTO);
                 return Ok(new { message = "Ticket Updated" });
@@ -237,7 +237,7 @@ namespace backend.Controllers
                 var findTicket = await ticketService.GetTicketById(ticketId);
                 if (findTicket == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Ticket not found" });
                 }
                 await ticketService.DeleteTicket(findTicket);
                 return Ok(new { message = "Ticket Deleted" });

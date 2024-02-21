@@ -20,8 +20,15 @@ namespace backend.Controllers
         {
             try
             {
-                var savedAssigned = await assignedprojectService.CreateAssignedProject(addAssignedProject);
-                return Ok(savedAssigned);
+                var newassigned = await assignedprojectService.CreateAssignedProject(addAssignedProject);
+                var savedassigned = new AssignedProjectDTO
+                {
+                    ProjectAssignedId = newassigned.ProjectAssignedId,
+                    UserId = newassigned.UserId,
+                    IsLead = newassigned.IsLead,
+                    ProjectId = newassigned.ProjectId,
+                };
+                return Ok(savedassigned);
             }
             catch (Exception ex)
             {
@@ -36,10 +43,10 @@ namespace backend.Controllers
                 var findAssigned = await assignedprojectService.GetAssigned(projectId, userId);
                 if(findAssigned == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Record Not found" });
                 }
                 await assignedprojectService.DeleteAssigned(findAssigned);
-                return Ok();
+                return Ok(new { message = "Deleted Successfully" });
             }
             catch(Exception ex)
             {
@@ -54,13 +61,13 @@ namespace backend.Controllers
                 var findAssigned = await assignedprojectService.GetAssigned(projectId, userId);
                 if (findAssigned == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Record Not found" });
                 }
                 await assignedprojectService.UpdateLeadTrue(findAssigned);
-                return Ok();
+                return Ok(new { message = "Updated Successfully" });
             }
-        catch(Exception ex) {
-                return BadRequest();
+            catch(Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
         [HttpPut("{projectId:Guid}/{leadId:Guid}/{userId:Guid}")]
@@ -72,15 +79,15 @@ namespace backend.Controllers
                 var findUser = await assignedprojectService.GetAssigned(projectId, userId);
                 if (findLead == null || findUser == null)
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Record Not found" });
                 }
                 await assignedprojectService.UpdateLeadFalse(findLead);
                 await assignedprojectService.UpdateLeadTrue(findUser);
-                return Ok();
+                return Ok(new { message = "Updated Successfully" });
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
 

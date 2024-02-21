@@ -7,17 +7,15 @@ namespace backend.Interfaces
     {
         Task<User> RegisterUser(AddUser adduser);
 
-        Task<List<User>> GetUsers();
+        Task<List<User>> GetUsersWithProjects();
 
-        Task<User> GetById(Guid id);
+        Task<User> GetUserWithProjectById(Guid id);
 
+        Task<User> GetUserById (Guid id);
         Task DeleteUser(User user);
-
-        // Task updatePassword(User user,string password);
-        Task <List<User>> GetByRole(Guid id);
         Task<User> CheckingExisting(string username, string email);
         Task<User> getByUsername(string username);
-
+        Task<List<User>> GetUsers();
         Task UpdateRole (Guid RoleId,User user);
         string EncryptPassword(string password);
         bool DecryptPassword(string Hashed, string password);

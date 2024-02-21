@@ -13,7 +13,7 @@ namespace backend.Services
             this.context = context;   
         }
 
-        public async Task<AssignedProjectDTO> CreateAssignedProject(AddAssignedProject addAssignedProject)
+        public async Task<AssignedProject> CreateAssignedProject(AddAssignedProject addAssignedProject)
         {
             var newassigned = new AssignedProject
             {
@@ -22,16 +22,9 @@ namespace backend.Services
                 IsLead = addAssignedProject.IsLead,
                 ProjectId = addAssignedProject.ProjectId,
             };
-            var savedassigned = new AssignedProjectDTO
-            {
-                ProjectAssignedId = newassigned.ProjectAssignedId,
-                UserId = newassigned.UserId,
-                IsLead = newassigned.IsLead,
-                ProjectId = newassigned.ProjectId,
-            };
             context.Add(newassigned);
             await context.SaveChangesAsync();
-            return savedassigned;
+            return newassigned;
         }
 
         public async Task DeleteAssigned(AssignedProject assignedProject)

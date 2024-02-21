@@ -5,8 +5,7 @@ namespace backend.Interfaces
 {
     public interface IAssignedProject
     {
-        Task<AssignedProjectDTO> CreateAssignedProject(AddAssignedProject addAssignedProject);
-
+        Task<AssignedProject> CreateAssignedProject(AddAssignedProject addAssignedProject);
 
         Task <AssignedProject> GetAssigned(Guid projectId,Guid userId);
 
