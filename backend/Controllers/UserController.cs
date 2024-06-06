@@ -11,7 +11,7 @@ namespace backend.Controllers
     public class UserController : Controller
     {
         private readonly userService userService;
-        public UserController(TestDBContext DbContext)
+        public UserController(TMSBackupContext DbContext)
         {
             this.userService = new userService(DbContext);
         }

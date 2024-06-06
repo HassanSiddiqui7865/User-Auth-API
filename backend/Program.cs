@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var provider = builder.Services.BuildServiceProvider();
 var config = provider.GetService<IConfiguration>();
-builder.Services.AddDbContext<TestDBContext>(item => item.UseSqlServer(config.GetConnectionString("LMS")));
+builder.Services.AddDbContext<TMSBackupContext>(item => item.UseSqlServer(config.GetConnectionString("LMS")));
 Configuration.Default.ApiKey.Add("api-key", builder.Configuration["EmailSenderKey:ApiKey"]);
 var app = builder.Build();
 

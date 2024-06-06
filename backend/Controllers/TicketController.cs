@@ -10,7 +10,7 @@ namespace backend.Controllers
     public class TicketController : Controller
     {
         private readonly ticketService ticketService;
-        public TicketController(TestDBContext context)
+        public TicketController(TMSBackupContext context)
         {
             this.ticketService = new ticketService(context);
         }

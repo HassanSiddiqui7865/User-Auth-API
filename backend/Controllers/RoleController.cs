@@ -10,7 +10,7 @@ namespace backend.Controllers
     public class RoleController : Controller
     {
         private readonly RoleService roleService;
-        public RoleController(TestDBContext context)
+        public RoleController(TMSBackupContext context)
         {
             this.roleService = new RoleService(context);   
         }

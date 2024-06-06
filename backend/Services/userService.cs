@@ -13,8 +13,8 @@ namespace backend.Services
 {
     public class userService : IUser
     {
-        private readonly TestDBContext context;
-        public userService(TestDBContext Dbcontext)
+        private readonly TMSBackupContext context;
+        public userService(TMSBackupContext Dbcontext)
         {
             this.context = Dbcontext;   
         }

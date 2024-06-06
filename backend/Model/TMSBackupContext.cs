@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace backend.Model
 {
-    public partial class TestDBContext : DbContext
+    public partial class TMSBackupContext : DbContext
     {
-        public TestDBContext()
+        public TMSBackupContext()
         {
         }
 
-        public TestDBContext(DbContextOptions<TestDBContext> options)
+        public TMSBackupContext(DbContextOptions<TMSBackupContext> options)
             : base(options)
         {
         }
@@ -20,6 +20,7 @@ namespace backend.Model
         public virtual DbSet<Book> Books { get; set; } = null!;
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<Room> Rooms { get; set; } = null!;
         public virtual DbSet<Ticket> Tickets { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -28,7 +29,7 @@ namespace backend.Model
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-ODRMVQ0;Database=TestDB;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=(localdb)\\LocalSDB;Database=TMSBackup;Trusted_Connection=True;");
             }
         }
 
@@ -37,7 +38,7 @@ namespace backend.Model
             modelBuilder.Entity<AssignedProject>(entity =>
             {
                 entity.HasKey(e => e.ProjectAssignedId)
-                    .HasName("PK__Assigned__7BD784155A56BBA0");
+                    .HasName("PK__Assigned__7BD78415E9523B53");
 
                 entity.ToTable("AssignedProject");
 
@@ -51,13 +52,13 @@ namespace backend.Model
                     .WithMany(p => p.AssignedProjects)
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__AssignedP__Proje__52593CB8");
+                    .HasConstraintName("FK__AssignedP__Proje__412EB0B6");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AssignedProjects)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__AssignedP__userI__5165187F");
+                    .HasConstraintName("FK__AssignedP__userI__403A8C7D");
             });
 
             modelBuilder.Entity<Book>(entity =>
@@ -125,6 +126,21 @@ namespace backend.Model
                     .HasColumnName("roleName");
             });
 
+            modelBuilder.Entity<Room>(entity =>
+            {
+                entity.ToTable("Room");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.RoomName)
+                    .HasMaxLength(100)
+                    .IsFixedLength();
+
+                entity.Property(e => e.SessionId).HasMaxLength(100);
+
+                entity.Property(e => e.Token).IsUnicode(false);
+            });
+
             modelBuilder.Entity<Ticket>(entity =>
             {
                 entity.Property(e => e.TicketId)
@@ -168,19 +184,19 @@ namespace backend.Model
                 entity.HasOne(d => d.AssignedToNavigation)
                     .WithMany(p => p.TicketAssignedToNavigations)
                     .HasForeignKey(d => d.AssignedTo)
-                    .HasConstraintName("FK__Tickets__assigne__5CD6CB2B");
+                    .HasConstraintName("FK__Tickets__assigne__4222D4EF");
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Tickets__project__5EBF139D");
+                    .HasConstraintName("FK__Tickets__project__440B1D61");
 
                 entity.HasOne(d => d.ReportedByNavigation)
                     .WithMany(p => p.TicketReportedByNavigations)
                     .HasForeignKey(d => d.ReportedBy)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Tickets__reporte__5DCAEF64");
+                    .HasConstraintName("FK__Tickets__reporte__4316F928");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -217,7 +233,7 @@ namespace backend.Model
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__USERS__roleId__534D60F1");
+                    .HasConstraintName("FK__USERS__roleId__44FF419A");
             });
 
             OnModelCreatingPartial(modelBuilder);

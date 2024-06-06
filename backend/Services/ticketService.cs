@@ -7,8 +7,8 @@ namespace backend.Services
 {
     public class ticketService : ITicket
     {
-        private readonly TestDBContext context;
-        public ticketService(TestDBContext context)
+        private readonly TMSBackupContext context;
+        public ticketService(TMSBackupContext context)
         {
             this.context = context; 
         }

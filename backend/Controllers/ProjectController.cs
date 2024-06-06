@@ -10,7 +10,7 @@ namespace backend.Controllers
     public class ProjectController : Controller
     {
         private readonly projectServices projectServices;
-        public ProjectController(TestDBContext DbContext)
+        public ProjectController(TMSBackupContext DbContext)
         {
             this.projectServices = new projectServices(DbContext);   
         }

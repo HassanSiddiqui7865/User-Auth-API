@@ -7,8 +7,8 @@ namespace backend.Services
 {
     public class AssignedprojectService : IAssignedProject
     {
-        private readonly TestDBContext context;
-        public AssignedprojectService(TestDBContext context)
+        private readonly TMSBackupContext context;
+        public AssignedprojectService(TMSBackupContext context)
         {
             this.context = context;   
         }
