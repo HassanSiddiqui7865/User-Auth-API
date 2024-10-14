@@ -35,6 +35,8 @@ namespace backend.Services
             return hashedPassword;
         }
 
+    
+
         public async Task<User> CheckingExisting(string username, string email)
         {
             var existingUser = await context.Users

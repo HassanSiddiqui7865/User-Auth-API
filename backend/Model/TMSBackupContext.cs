@@ -29,6 +29,7 @@ namespace backend.Model
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                //optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=aspnet-53bc9b9d-9d6a-45d4-8429-2a2761773502;Trusted_Connection=True;MultipleActiveResultSets=true;");
                 optionsBuilder.UseSqlServer("Server=(localdb)\\LocalSDB;Database=TMSBackup;Trusted_Connection=True;");
             }
         }
@@ -130,13 +131,13 @@ namespace backend.Model
             {
                 entity.ToTable("Room");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.RoomName)
                     .HasMaxLength(100)
                     .IsFixedLength();
 
-                entity.Property(e => e.SessionId).HasMaxLength(100);
+                entity.Property(e => e.SessionId).HasMaxLength(500);
 
                 entity.Property(e => e.Token).IsUnicode(false);
             });
